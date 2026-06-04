@@ -10,6 +10,7 @@ from sklearn.metrics import f1_score
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.optimizers import SGD
 
 # ==================================
 # Carregamento
@@ -88,14 +89,9 @@ for train_idx, test_idx in skf.split(X, y_encoded):
 
     model = Sequential([
         Dense(
-            64,
+            100,
             activation='relu',
             input_shape=(X_train.shape[1],)
-        ),
-
-        Dense(
-            32,
-            activation='relu'
         ),
 
         Dense(
@@ -104,8 +100,13 @@ for train_idx, test_idx in skf.split(X, y_encoded):
         )
     ])
 
+    optimizer = SGD(
+        learning_rate = 0.01,
+        momentum = 0.9
+    )
+
     model.compile(
-        optimizer='adam',
+        optimizer=optimizer,
         loss='categorical_crossentropy',
         metrics=['accuracy']
     )
@@ -113,7 +114,7 @@ for train_idx, test_idx in skf.split(X, y_encoded):
     history = model.fit(
         X_train,
         y_train_hot,
-        epochs=50,
+        epochs=30,
         batch_size=32,
         validation_split=0.1,
         verbose=0
